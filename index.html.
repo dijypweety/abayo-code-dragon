@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abayo the Chat Dragon 🐉</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000; /* black */
+      color: #add8e6; /* light blue */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    #chatbox {
+      width: 90%;
+      max-width: 600px;
+      height: 60vh;
+      border: 2px solid #add8e6;
+      padding: 10px;
+      overflow-y: auto;
+      background: #111;
+    }
+
+    .message {
+      margin: 10px 0;
+    }
+
+    .user {
+      color: #add8e6;
+    }
+
+    .dragon {
+      color: #000;
+      background-color: #add8e6;
+      padding: 5px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    #inputArea {
+      margin-top: 20px;
+      display: flex;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid #add8e6;
+      background-color: #000;
+      color: #add8e6;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      background-color: #add8e6;
+      color: #000;
+      border: none;
+      cursor: pointer;
+    }
+
+    .fire-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: red;
+      animation: fadeOut 3s forwards;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Abayo the Chat Dragon 🐉</h1>
+  <div id="chatbox"></div>
+  <div id="inputArea">
+    <input type="text" id="userInput" placeholder="Say something to Abayo..." />
+    <button onclick="handleInput()">Send</button>
+  </div>
+
+  <script>
+    const chatbox = document.getElementById('chatbox');
+
+    function addMessage(sender, text) {
+      const message = document.createElement('div');
+      message.className = 'message ' + sender;
+      message.innerHTML = `<strong>${sender === 'user' ? 'You' : 'Abayo'}:</strong> ${text}`;
+      chatbox.appendChild(message);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    async function handleInput() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim().toLowerCase();
+      if (!text) return;
+      addMessage('user', text);
+      input.value = '';
+
+      if (text.includes("bye")) {
+        addMessage('dragon', "ROAAARRRR!!! 🔥🔥🔥");
+        triggerFireEffect();
+        return;
+      }
+
+      if (text.includes("joke")) {
+        const joke = await fetchJoke();
+        addMessage('dragon', joke);
+      } else if (text.includes("dragon fact")) {
+        addMessage('dragon', getRandom(dragonFacts));
+      } else if (text.includes("code fact")) {
+        addMessage('dragon', getRandom(codeFacts));
+      } else if (text.includes("hello") || text.includes("hi")) {
+        addMessage('dragon', "Hewwo! Abayo loves new friends! 🐲💚");
+      } else if (text.includes("how are you")) {
+        addMessage('dragon', "I'm soaring high and breathing fire! 🔥 How about you?");
+      } else {
+        addMessage('dragon', "Hmm, Abayo doesn't get that yet 🤔 Maybe try 'joke', 'dragon fact', or 'code fact'?");
+      }
+    }
+
+    function getRandom(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    async function fetchJoke() {
+      try {
+        const res = await fetch("https://v2.jokeapi.dev/joke/Any");
+        const data = await res.json();
+        return data.type === "single" ? data.joke : `${data.setup} ... ${data.delivery}`;
+      } catch {
+        return "Oops! I lost the joke scroll 🐉💨";
+      }
+    }
+
+    function triggerFireEffect() {
+      const fireScreen = document.createElement('div');
+      fireScreen.className = 'fire-screen';
+      fireScreen.innerHTML = "🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥";
+      document.body.appendChild(fireScreen);
+      setTimeout(() => {
+        fireScreen.remove();
+        document.body.innerHTML = `<div style="color: white; text-align: center; font-size: 2rem; padding-top: 30vh;">Abayo has vanished into the darkness...</div>`;
+      }, 3000);
+    }
+
+    const dragonFacts = [
+      "Dragons are legendary creatures found in myths across many cultures!",
+      "Some dragons are said to control the weather or guard treasures!",
+      "Chinese dragons symbolize power, strength, and good luck!",
+      "Did you know? European dragons are often fire-breathing and winged!"
+    ];
+
+    const codeFacts = [
+      "The first computer programmer was Ada Lovelace in the 1800s!",
+      "Python was named after the British comedy group Monty Python!",
+      "The first computer virus was created in 1986 and was called Brain.",
+      "Java was initially designed for interactive television, not the web!"
+    ];
+  </script>
+
+</body>
+</html>
